@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>此刻的春节</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(180deg, #b40000, #7a0000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: #fff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 18px;
+      opacity: 0.85;
+      margin-bottom: 48px;
+    }
+
+    .lantern {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 48px;
+      border-radius: 50%;
+      background: radial-gradient(circle at top, #ffb3b3, #d10000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      user-select: none;
+    }
+
+    .lantern:active {
+      transform: scale(0.95);
+    }
+
+    .blessing {
+      min-height: 60px;
+      font-size: 20px;
+      line-height: 1.6;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .blessing.show {
+      opacity: 1;
+    }
+
+    .footer {
+      margin-top: 48px;
+      font-size: 12px;
+      opacity: 0.4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="title">今年春节，慢一点也没关系</div>
+
+    <div class="lantern" id="lantern">
+      点一下
+    </div>
+
+    <div class="blessing" id="blessing">
+      <!-- 祝福会显示在这里 -->
+    </div>
+
+    <div class="footer">此刻的春节</div>
+  </div>
+
+  <script>
+    const blessings = [
+      "今年，慢一点也没关系。",
+      "你已经走了很远了。",
+      "现在这样，就挺好的。",
+      "这一年，辛苦了。",
+      "回不回家，都算过年。",
+      "灯还亮着，你不孤单。",
+      "不需要想太多，先过完今天。",
+      "歇一会儿，不算逃避。",
+      "世界在慢慢安静下来。",
+      "这一刻，先留给自己。"
+    ];
+
+    const lantern = document.getElementById("lantern");
+    const blessingEl = document.getElementById("blessing");
+
+    lantern.addEventListener("click", () => {
+      const text =
+        blessings[Math.floor(Math.random() * blessings.length)];
+
+      blessingEl.classList.remove("show");
+      void blessingEl.offsetWidth; // 强制刷新动画
+      blessingEl.textContent = text;
+      blessingEl.classList.add("show");
+    });
+  </script>
+</body>
+</html>
