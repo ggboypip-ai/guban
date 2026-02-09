@@ -8,113 +8,824 @@
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       margin: 0;
-      height: 100vh;
-      background: linear-gradient(180deg, #b40000, #7a0000);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #1a0a0a 0%, #4a0e0e 30%, #8B0000 60%, #4a0404 100%);
+      overflow-x: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
         "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: #fff;
+      position: relative;
     }
 
-    .container {
+    /* 背景装饰 - 星星 */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 420px;
-      padding: 32px 24px;
-      text-align: center;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .title {
-      font-size: 18px;
-      opacity: 0.85;
-      margin-bottom: 48px;
-    }
-
-    .lantern {
-      width: 140px;
-      height: 140px;
-      margin: 0 auto 48px;
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 215, 0, 0.8);
       border-radius: 50%;
-      background: radial-gradient(circle at top, #ffb3b3, #d10000);
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); }
+    }
+
+    /* 烟花容器 */
+    .fireworks-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .firework {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+
+    .firework::before,
+    .firework::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* 红包雨 */
+    .red-packets {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .packet {
+      position: absolute;
+      width: 40px;
+      height: 60px;
+      background: linear-gradient(135deg, #d10000 0%, #8B0000 100%);
+      border-radius: 4px;
+      border: 2px solid #ffd700;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 20px;
+      animation: fall linear;
+      opacity: 0.9;
+    }
+
+    .packet::before {
+      content: '福';
+      color: #ffd700;
+      font-weight: bold;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+
+    /* 主容器 */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* 顶部装饰栏 */
+    .top-bar {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .music-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      color: #ffd700;
+      font-size: 20px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .music-btn:hover {
+      background: rgba(255, 215, 0, 0.2);
+      transform: scale(1.1);
+    }
+
+    .music-btn.playing {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+    }
+
+    .share-btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      color: #ffd700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .share-btn:hover {
+      background: rgba(255, 215, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* 标题区域 */
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .year-tag {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 20px;
+      font-size: 14px;
+      color: #ffd700;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+    }
+
+    .main-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .sub-title {
+      font-size: 16px;
+      opacity: 0.8;
+      font-weight: 300;
+    }
+
+    /* 灯笼区域 */
+    .lantern-wrapper {
+      position: relative;
+      margin: 40px 0;
+    }
+
+    .lantern-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255, 100, 100, 0.4) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: breathe 3s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+    }
+
+    .lantern {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b 0%, #d10000 50%, #8B0000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      cursor: pointer;
+      transition: all 0.3s ease;
       user-select: none;
+      box-shadow: 
+        0 10px 40px rgba(209, 0, 0, 0.5),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.2),
+        inset 0 10px 20px rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(255, 215, 0, 0.5);
+      z-index: 10;
+    }
+
+    .lantern::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 20px;
+      background: #8B4513;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .lantern::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 40px;
+      background: linear-gradient(to bottom, transparent, rgba(255, 215, 0, 0.6));
+    }
+
+    .lantern:hover {
+      transform: scale(1.05);
+      box-shadow: 
+        0 15px 50px rgba(209, 0, 0, 0.6),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.2),
+        inset 0 10px 20px rgba(255, 255, 255, 0.3);
     }
 
     .lantern:active {
       transform: scale(0.95);
     }
 
-    .blessing {
-      min-height: 60px;
-      font-size: 20px;
-      line-height: 1.6;
+    .lantern.shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+    }
+
+    .lantern-hint {
+      margin-top: 16px;
+      font-size: 14px;
+      color: rgba(255, 215, 0, 0.8);
       opacity: 0;
-      transition: opacity 0.6s ease;
+      transition: opacity 0.3s ease;
+    }
+
+    .lantern-wrapper:hover .lantern-hint {
+      opacity: 1;
+    }
+
+    /* 祝福语区域 */
+    .blessing-container {
+      min-height: 120px;
+      margin: 30px 0;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .blessing-container::before {
+      content: '"';
+      position: absolute;
+      top: 10px;
+      left: 16px;
+      font-size: 60px;
+      color: rgba(255, 215, 0, 0.2);
+      font-family: serif;
+      line-height: 1;
+    }
+
+    .blessing {
+      font-size: 22px;
+      line-height: 1.8;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 300;
+      position: relative;
+      z-index: 1;
     }
 
     .blessing.show {
       opacity: 1;
+      transform: translateY(0);
+    }
+
+    .blessing-author {
+      margin-top: 16px;
+      font-size: 14px;
+      color: rgba(255, 215, 0, 0.7);
+      opacity: 0;
+      transition: opacity 0.8s ease 0.3s;
+    }
+
+    .blessing.show + .blessing-author,
+    .blessing.show ~ .blessing-author {
+      opacity: 1;
+    }
+
+    /* 统计信息 */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 20px 0;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .stats.show {
+      opacity: 1;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4px;
+    }
+
+    /* 底部区域 */
+    .footer-section {
+      margin-top: auto;
+      padding-top: 40px;
+    }
+
+    .wish-input-area {
+      margin-bottom: 24px;
+    }
+
+    .wish-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 25px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .wish-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .wish-input:focus {
+      border-color: rgba(255, 215, 0, 0.6);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .wish-btn {
+      margin-top: 12px;
+      padding: 12px 32px;
+      border-radius: 25px;
+      border: none;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #8B0000;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .wish-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
     }
 
     .footer {
-      margin-top: 48px;
       font-size: 12px;
       opacity: 0.4;
+      margin-top: 24px;
+    }
+
+    .footer-divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.5), transparent);
+      margin: 0 auto 16px;
+    }
+
+    /* 提示消息 */
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      padding: 16px 32px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 12px;
+      color: #ffd700;
+      font-size: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* 响应式 */
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+      }
+      
+      .main-title {
+        font-size: 24px;
+      }
+      
+      .lantern {
+        width: 140px;
+        height: 140px;
+        font-size: 40px;
+      }
+      
+      .blessing {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 
 <body>
+  <!-- 背景星星 -->
+  <div class="stars" id="stars"></div>
+  
+  <!-- 烟花容器 -->
+  <div class="fireworks-container" id="fireworks"></div>
+  
+  <!-- 红包雨容器 -->
+  <div class="red-packets" id="redPackets"></div>
+
   <div class="container">
-    <div class="title">今年春节，慢一点也没关系</div>
-
-    <div class="lantern" id="lantern">
-      点一下
+    <!-- 顶部控制栏 -->
+    <div class="top-bar">
+      <button class="music-btn" id="musicBtn" title="背景音乐">🎵</button>
+      <button class="share-btn" id="shareBtn">分享祝福</button>
     </div>
 
-    <div class="blessing" id="blessing">
-      <!-- 祝福会显示在这里 -->
+    <!-- 标题 -->
+    <div class="header">
+      <div class="year-tag">🧧 乙巳蛇年</div>
+      <h1 class="main-title">此刻的春节</h1>
+      <p class="sub-title">点一盏灯，许一个愿</p>
     </div>
 
-    <div class="footer">此刻的春节</div>
+    <!-- 灯笼 -->
+    <div class="lantern-wrapper">
+      <div class="lantern-glow"></div>
+      <div class="lantern" id="lantern">🏮</div>
+      <div class="lantern-hint">点击灯笼，领取新年祝福</div>
+    </div>
+
+    <!-- 祝福语 -->
+    <div class="blessing-container">
+      <div class="blessing" id="blessing">
+        等待你的第一盏灯...
+      </div>
+      <div class="blessing-author" id="blessingAuthor">—— 此刻的春节</div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats" id="stats">
+      <div class="stat-item">
+        <div class="stat-number" id="clickCount">0</div>
+        <div class="stat-label">点亮次数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="uniqueCount">0</div>
+        <div class="stat-label">收集祝福</div>
+      </div>
+    </div>
+
+    <!-- 底部 -->
+    <div class="footer-section">
+      <div class="wish-input-area">
+        <input type="text" class="wish-input" id="wishInput" placeholder="写下你的新年愿望..." maxlength="30">
+        <button class="wish-btn" id="wishBtn">放飞愿望</button>
+      </div>
+      
+      <div class="footer-divider"></div>
+      <div class="footer">愿这一刻，被好好记住</div>
+    </div>
   </div>
 
+  <!-- 提示消息 -->
+  <div class="toast" id="toast"></div>
+
   <script>
+    // 祝福语库
     const blessings = [
-      "今年，慢一点也没关系。",
-      "你已经走了很远了。",
-      "现在这样，就挺好的。",
-      "这一年，辛苦了。",
-      "回不回家，都算过年。",
-      "灯还亮着，你不孤单。",
-      "不需要想太多，先过完今天。",
-      "歇一会儿，不算逃避。",
-      "世界在慢慢安静下来。",
-      "这一刻，先留给自己。"
+      { text: "今年，慢一点也没关系。", author: "此刻的春节" },
+      { text: "你已经走了很远了。", author: "此刻的春节" },
+      { text: "现在这样，就挺好的。", author: "此刻的春节" },
+      { text: "这一年，辛苦了。", author: "此刻的春节" },
+      { text: "回不回家，都算过年。", author: "此刻的春节" },
+      { text: "灯还亮着，你不孤单。", author: "此刻的春节" },
+      { text: "不需要想太多，先过完今天。", author: "此刻的春节" },
+      { text: "歇一会儿，不算逃避。", author: "此刻的春节" },
+      { text: "世界在慢慢安静下来。", author: "此刻的春节" },
+      { text: "这一刻，先留给自己。", author: "此刻的春节" },
+      { text: "愿你眼里有光，心中有爱。", author: "此刻的春节" },
+      { text: "所有的美好，都在路上。", author: "此刻的春节" },
+      { text: "新的一年，做自己的太阳。", author: "此刻的春节" },
+      { text: "生活明朗，万物可爱。", author: "此刻的春节" },
+      { text: "愿你被这个世界温柔以待。", author: "此刻的春节" }
     ];
 
-    const lantern = document.getElementById("lantern");
-    const blessingEl = document.getElementById("blessing");
+    // 用户自定义愿望
+    let customWishes = JSON.parse(localStorage.getItem('customWishes') || '[]');
 
-    lantern.addEventListener("click", () => {
-      const text =
-        blessings[Math.floor(Math.random() * blessings.length)];
+    // 状态
+    let clickCount = parseInt(localStorage.getItem('clickCount') || '0');
+    let seenBlessings = new Set(JSON.parse(localStorage.getItem('seenBlessings') || '[]'));
+    let isPlaying = false;
+    let audioContext = null;
 
-      blessingEl.classList.remove("show");
-      void blessingEl.offsetWidth; // 强制刷新动画
-      blessingEl.textContent = text;
-      blessingEl.classList.add("show");
+    // DOM 元素
+    const lantern = document.getElementById('lantern');
+    const blessing = document.getElementById('blessing');
+    const blessingAuthor = document.getElementById('blessingAuthor');
+    const clickCountEl = document.getElementById('clickCount');
+    const uniqueCountEl = document.getElementById('uniqueCount');
+    const stats = document.getElementById('stats');
+    const musicBtn = document.getElementById('musicBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const wishInput = document.getElementById('wishInput');
+    const wishBtn = document.getElementById('wishBtn');
+    const toast = document.getElementById('toast');
+    const fireworksContainer = document.getElementById('fireworks');
+    const redPacketsContainer = document.getElementById('redPackets');
+
+    // 初始化
+    function init() {
+      updateStats();
+      createStars();
+      startRedPacketRain();
+      
+      // 检查是否有保存的音乐状态
+      if (localStorage.getItem('musicPlaying') === 'true') {
+        toggleMusic();
+      }
+    }
+
+    // 创建背景星星
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // 烟花效果
+    function createFirework(x, y) {
+      const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#ffe66d', '#ff8c42', '#ff6b9d', '#c7f464'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'firework';
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.background = color;
+        
+        const angle = (i / 12) * Math.PI * 2;
+        const velocity = 100 + Math.random() * 50;
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity;
+        
+        particle.style.setProperty('--vx', vx + 'px');
+        particle.style.setProperty('--vy', vy + 'px');
+        
+        fireworksContainer.appendChild(particle);
+        
+        // 动画
+        const duration = 800 + Math.random() * 400;
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${vx}px, ${vy}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0, .9, .57, 1)'
+        }).onfinish = () => particle.remove();
+      }
+    }
+
+    // 红包雨
+    function startRedPacketRain() {
+      setInterval(() => {
+        if (Math.random() > 0.7) return; // 控制密度
+        
+        const packet = document.createElement('div');
+        packet.className = 'packet';
+        packet.style.left = Math.random() * 100 + '%';
+        packet.style.animationDuration = (5 + Math.random() * 5) + 's';
+        packet.style.opacity = 0.3 + Math.random() * 0.4;
+        
+        redPacketsContainer.appendChild(packet);
+        
+        setTimeout(() => packet.remove(), 10000);
+      }, 2000);
+    }
+
+    // 点击灯笼
+    lantern.addEventListener('click', (e) => {
+      // 更新计数
+      clickCount++;
+      localStorage.setItem('clickCount', clickCount);
+      
+      // 获取随机祝福
+      const allBlessings = [...blessings, ...customWishes.map(w => ({ text: w, author: '你的心愿' }))];
+      const randomIndex = Math.floor(Math.random() * allBlessings.length);
+      const selected = allBlessings[randomIndex];
+      
+      // 记录已见
+      seenBlessings.add(randomIndex);
+      localStorage.setItem('seenBlessings', JSON.stringify([...seenBlessings]));
+      
+      // 动画效果
+      lantern.classList.add('shake');
+      setTimeout(() => lantern.classList.remove('shake'), 500);
+      
+      // 烟花
+      const rect = lantern.getBoundingClientRect();
+      createFirework(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      
+      // 播放音效
+      playBellSound();
+      
+      // 显示祝福
+      blessing.classList.remove('show');
+      setTimeout(() => {
+        blessing.textContent = selected.text;
+        blessingAuthor.textContent = '—— ' + selected.author;
+        blessing.classList.add('show');
+        stats.classList.add('show');
+        updateStats();
+      }, 100);
     });
+
+    // 更新统计
+    function updateStats() {
+      clickCountEl.textContent = clickCount;
+      uniqueCountEl.textContent = seenBlessings.size;
+    }
+
+    // 播放铃声（Web Audio API）
+    function playBellSound() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+      oscillator.frequency.exponentialRampToValueAtTime(1046.5, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    }
+
+    // 背景音乐（模拟）
+    function toggleMusic() {
+      isPlaying = !isPlaying;
+      musicBtn.classList.toggle('playing', isPlaying);
+      musicBtn.textContent = isPlaying ? '🔔' : '🎵';
+      localStorage.setItem('musicPlaying', isPlaying);
+      showToast(isPlaying ? '背景音乐已开启' : '背景音乐已关闭');
+    }
+
+    musicBtn.addEventListener('click', toggleMusic);
+
+    // 分享功能
+    shareBtn.addEventListener('click', () => {
+      const text = `我在"此刻的春节"点亮了${clickCount}盏灯，收集了${seenBlessings.size}个祝福。愿这一年，慢一点也没关系。`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: '此刻的春节',
+          text: text,
+          url: window.location.href
+        });
+      } else {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('祝福已复制到剪贴板');
+        });
+      }
+    });
+
+    // 放飞愿望
+    wishBtn.addEventListener('click', () => {
+      const wish = wishInput.value.trim();
+      if (!wish) {
+        showToast('请先写下你的愿望');
+        return;
+      }
+      
+      customWishes.push(wish);
+      localStorage.setItem('customWishes', JSON.stringify(customWishes));
+      
+      wishInput.value = '';
+      showToast('愿望已放飞，会随机出现在祝福中');
+      
+      // 创建特殊烟花
+      const rect = wishBtn.getBoundingClientRect();
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          createFirework(rect.left + rect.width / 2, rect.top);
+        }, i * 200);
+      }
+    });
+
+    // 显示提示
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // 启动
+    init();
   </script>
 </body>
 </html>
