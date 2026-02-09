@@ -1,1 +1,1 @@
-(https://ggboypip-ai.github.io/guban/)
+(https://ggboypip-ai.github.io/guban/index.html)
